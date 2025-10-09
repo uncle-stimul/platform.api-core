@@ -15,7 +15,7 @@ RUN go build -a -installsuffix cgo -o /app/healthcheck ./healthcheck.go
 FROM scratch
 
 ENV PLATFORM_API_ADDRESS="0.0.0.0"
-ENV PLATFORM_API_PORT="8080"
+ENV PLATFORM_API_PORT="3000"
 ENV PLATFORM_API_MODE="prod"
 ENV PLATFORM_LOG_LEVEL="info"
 ENV PLATFORM_LOG_FORMAT="console"
