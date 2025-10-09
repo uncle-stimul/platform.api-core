@@ -1,0 +1,1 @@
+# Компонент platform.api-core
