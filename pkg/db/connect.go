@@ -9,11 +9,12 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func connect(cfg configs.DatabaseConfig, log *logrus.Logger) *gorm.DB {
 	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s",
+		"host=%s user=%s password=%s dbname=%s port=%d",
 		cfg.GetAddress(),
 		cfg.GetUser(),
 		cfg.GetPass(),
@@ -21,7 +22,11 @@ func connect(cfg configs.DatabaseConfig, log *logrus.Logger) *gorm.DB {
 		cfg.GetPort(),
 	)
 
-	pgdb, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	pgdb, err := gorm.Open(
+		postgres.Open(dsn),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
+
 	if err != nil {
 		log.WithError(err).Fatal("Во время подключения к БД возникла ошибка:")
 	}
