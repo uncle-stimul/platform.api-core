@@ -5,17 +5,18 @@ import (
 )
 
 func AddRoutes(router *gin.Engine) {
-	router.GET("/healthcheck", getHealthcheck)
-	router.GET("/api/status", getStatus)
+	router.GET("/api/module/healthcheck", GetHealthcheck)
+	router.GET("/api/module/info", GetModuleInfo)
 
-	//router.POST("/api/auth/login", ###)
-	//router.POST("/api/auth/logout", ###)
+	//router.GET("/api/auth/session", ###)
+	//router.POST("/api/auth/session", ###)
+	//router.DELETE("/api/auth/logout", ###)
 
-	router.GET("/api/users/all", getUsers)
-	//router.GET("/api/users/id", getUser)
-	//router.POST("/api/users/id", postUser)
-	//router.PUT("/api/users/id", updUser)
-	//router.DELETE("/api/users/id", delUser)
+	router.GET("/api/users/all", GetUsers)
+	router.GET("/api/users/id", GetUser)
+	router.POST("/api/users/id", CreateUser)
+	router.PUT("/api/users/id", UpdateUser)
+	router.DELETE("/api/users/id", DeleteUser)
 
 	router.GET("/api/roles/all", getRoles)
 	//router.GET("/api/roles/id", getRole)
