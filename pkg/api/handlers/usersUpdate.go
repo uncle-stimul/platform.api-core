@@ -17,19 +17,21 @@ func UpdateUser(c *gin.Context) {
 
 	var req models.UpdateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.WithError(err).Error("Получен не корректрный JSON для обновления пользователя:")
+		msg := "Получен не корректрный JSON для обновления пользователя:"
+		log.WithError(err).Error(msg)
 		c.JSON(http.StatusBadRequest, models.DefaultResponse{
 			Status: "error",
-			Msg:    "Получен не корректрный JSON для обновления пользователя",
+			Msg:    msg,
 		})
 		return
 	}
 
 	if req.ID == 0 {
-		log.Errorf("Полученный JSON, который не содедржит идентификатора пользователя %s", req.Username)
+		msg := fmt.Sprintf("Полученный JSON, который не содедржит идентификатора пользователя %s", req.Username)
+		log.Error(msg)
 		c.JSON(http.StatusBadRequest, models.DefaultResponse{
 			Status: "error",
-			Msg:    fmt.Sprintf("Полученный JSON, который не содедржит идентификатора пользователя %s", req.Username),
+			Msg:    msg,
 		})
 		return
 	}
@@ -111,14 +113,15 @@ func UpdateUser(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.DefaultResponse{
 			Status: "error",
-			Msg:    err.Error(),
+			Msg:    fmt.Sprintf("Обновление пользователя c ID: %d привело к ошибке", req.ID),
 		})
 		return
+	} else {
+		msg := fmt.Sprintf("Пользователь c ID: %d успешно обновлен", req.ID)
+		log.Info(msg)
+		c.JSON(http.StatusOK, models.DefaultResponse{
+			Status: "success",
+			Msg:    msg,
+		})
 	}
-
-	log.Infof("Пользователь c ID: %d успешно обновлен полностью", req.ID)
-	c.JSON(http.StatusOK, models.DefaultResponse{
-		Status: "success",
-		Msg:    fmt.Sprintf("Пользователь %s успешно обновлен", req.Username),
-	})
 }

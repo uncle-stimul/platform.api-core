@@ -7,8 +7,6 @@ import (
 
 	"gorm.io/gorm"
 	"platform.api-core/pkg/api/utils"
-	"platform.api-core/pkg/db/methods"
-	dmodels "platform.api-core/pkg/db/models"
 	"platform.api-core/pkg/models"
 
 	"github.com/gin-gonic/gin"
@@ -18,13 +16,12 @@ func GetUsers(c *gin.Context) {
 	log := utils.AddContextLogger(c)
 	pgdb := utils.AddContextDB(c)
 
-	users, err := methods.SelectAll[dmodels.Users](pgdb.Preload("Roles"))
+	var users []models.Users
+	err := pgdb.Preload("Roles").Find(&users).Error
 	if err != nil {
-		log.WithError(err).Error("При получении выборки пользователей возникла ошибка:")
-		c.JSON(http.StatusInternalServerError, models.DefaultResponse{
-			Status: "error",
-			Msg:    "При получении выборки пользователей возникла ошибка",
-		})
+		msg := "При получении выборки пользователей возникла ошибка"
+		log.WithError(err).Error(msg)
+		c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
 		return
 	}
 
@@ -50,37 +47,29 @@ func GetUser(c *gin.Context) {
 
 	var req models.GetUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.WithError(err).Error("Получен некорректный JSON для вывода пользователя:")
-		c.JSON(http.StatusBadRequest, models.DefaultResponse{
-			Status: "error",
-			Msg:    "Получен некорректный JSON для вывода пользователя",
-		})
+		msg := "Получен некорректный JSON для вывода пользователя"
+		log.WithError(err).Error(msg)
+		c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
 		return
 	}
 
 	if req.ID == 0 {
-		log.Error("Полученный JSON не содержит идентификатора пользователя")
-		c.JSON(http.StatusBadRequest, models.DefaultResponse{
-			Status: "error",
-			Msg:    "ID пользователя обязателен",
-		})
+		msg := "Полученный JSON не содержит идентификатора пользователя"
+		log.Error(msg)
+		c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
 		return
 	}
 
 	var user models.Users
 	if err := pgdb.Preload("Roles").First(&user, req.ID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			log.Errorf("Пользователь с ID %d не найден", req.ID)
-			c.JSON(http.StatusNotFound, models.DefaultResponse{
-				Status: "error",
-				Msg:    fmt.Sprintf("Пользователь с ID %d не найден", req.ID),
-			})
+			msg := fmt.Sprintf("Пользователь с ID %d не найден", req.ID)
+			log.Error(msg)
+			c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
 		} else {
-			log.WithError(err).Errorf("При поиске пользователя с ID: %d возникла ошибка", req.ID)
-			c.JSON(http.StatusInternalServerError, models.DefaultResponse{
-				Status: "error",
-				Msg:    fmt.Sprintf("При поиске пользователя с ID: %d возникла ошибка", req.ID),
-			})
+			msg := fmt.Sprintf("При поиске пользователя с ID: %d возникла ошибка", req.ID)
+			log.WithError(err).Error(msg)
+			c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
 		}
 		return
 	}
@@ -89,7 +78,7 @@ func GetUser(c *gin.Context) {
 		ID:       user.ID,
 		Username: user.Username,
 		Status:   user.Status,
-		Roles:    utils.ExtractRoleIDs(user.Roles),
+		Roles:    utils.ExtractRolesNames(user.Roles),
 	}
 
 	log.Infof("Предоставлена информация по пользователю с ID: %d", req.ID)

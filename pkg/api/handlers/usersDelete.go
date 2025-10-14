@@ -15,53 +15,59 @@ func DeleteUser(c *gin.Context) {
 
 	var req models.DeleteUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.WithError(err).Error("Получен некорректный JSON для удаления пользователя:")
+		msg := "Получен некорректный JSON для удаления пользователя:"
+		log.WithError(err).Error(msg)
 		c.JSON(http.StatusBadRequest, models.DefaultResponse{
 			Status: "error",
-			Msg:    "Получен некорректный JSON для удаления пользователя",
+			Msg:    msg,
 		})
 		return
 	}
 
 	if req.ID == 0 {
-		log.Error("Полученный JSON не содержит идентификатора пользователя")
+		msg := "Полученный JSON не содержит идентификатора пользователя"
+		log.Error(msg)
 		c.JSON(http.StatusBadRequest, models.DefaultResponse{
 			Status: "error",
-			Msg:    "ID пользователя обязателен",
+			Msg:    msg,
 		})
 		return
 	}
 
 	if req.ID == 1 {
-		log.Error("Невозможно удалить встроенного администратора")
+		msg := "Невозможно удалить встроенного администратора"
+		log.Error(msg)
 		c.JSON(http.StatusBadRequest, models.DefaultResponse{
 			Status: "error",
-			Msg:    "Невозможно удалить встроенного администратора",
+			Msg:    msg,
 		})
 		return
 	}
 
 	if err := pgdb.First(&models.Users{}, req.ID).Error; err != nil {
-		log.WithError(err).Errorf("При поиске пользователя с ID: %d возникла не предвиденная ошибка", req.ID)
+		msg := fmt.Sprintf("При поиске пользователя с ID: %d возникла не предвиденная ошибка", req.ID)
+		log.WithError(err).Error(msg)
 		c.JSON(http.StatusNotFound, models.DefaultResponse{
 			Status: "error",
-			Msg:    fmt.Sprintf("Пользователь с ID: %d не найден в базе данных", req.ID),
+			Msg:    msg,
 		})
 		return
 	}
 
 	if err := pgdb.Delete(&models.Users{ID: req.ID}).Error; err != nil {
-		log.WithError(err).Error("При создании пользователя возникла ошибка:")
+		msg := "При удалении пользователя возникла ошибка"
+		log.WithError(err).Error(msg)
 		c.JSON(http.StatusInternalServerError, models.DefaultResponse{
 			Status: "error",
-			Msg:    "При создании пользователя возникла ошибка",
+			Msg:    msg,
 		})
 		return
 	} else {
-		log.Infof("Пользователь с ID %d успешно удален", req.ID)
+		msg := fmt.Sprintf("Пользователь с ID %d успешно удален", req.ID)
+		log.Info(msg)
 		c.JSON(http.StatusOK, models.DefaultResponse{
 			Status: "success",
-			Msg:    fmt.Sprintf("Пользователь с ID %d успешно удален", req.ID),
+			Msg:    msg,
 		})
 	}
 }
