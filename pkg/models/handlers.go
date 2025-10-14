@@ -23,10 +23,10 @@ type GetUserRequest struct {
 }
 
 type GetUserResponse struct {
-	ID       uint   `json:"ID"`
-	Username string `json:"Username"`
-	Status   bool   `json:"Status"`
-	Roles    []uint `json:"Roles"`
+	ID       uint     `json:"id"`
+	Username string   `json:"username"`
+	Status   bool     `json:"status"`
+	Roles    []string `json:"roles"`
 }
 
 type CreateUserRequest struct {
@@ -46,4 +46,84 @@ type UpdateUserRequest struct {
 
 type DeleteUserRequest struct {
 	ID uint `json:"id" binding:"required,min=1"`
+}
+
+type GetRolesResponse struct {
+	Name        string   `json:"role"`
+	Description string   `json:"descriptions"`
+	Permissions []string `json:"permissions"`
+}
+
+type GetRoleRequest struct {
+	ID uint `json:"id" binding:"required,min=1"`
+}
+
+type GetRoleResponse struct {
+	ID          uint     `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Permissions []string `json:"permissions"`
+}
+
+type CreateRoleRequest struct {
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description"`
+	Permissions []uint `json:"permissions"`
+}
+
+type UpdateRoleRequest struct {
+	ID          uint   `json:"id" binding:"required,min=1"`
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description"`
+	Permissions []uint `json:"permissions,omitempty"`
+}
+
+type GetPermissionsResponse struct {
+	Name        string   `json:"permissions"`
+	Description string   `json:"descriptions"`
+	Sections    []string `json:"sections"`
+}
+
+type GetDelPermissionRequest struct {
+	ID uint `json:"id" binding:"required,min=1"`
+}
+
+type GetPermissionResponse struct {
+	ID          uint   `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Sections    []uint `json:"sections"`
+}
+
+type CreatePermissionRequest struct {
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description"`
+	Sections    []uint `json:"sections"`
+}
+
+type UpdatePermissionRequest struct {
+	ID          uint   `json:"id" binding:"required,min=1"`
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description"`
+	Sections    []uint `json:"sections,omitempty"`
+}
+
+type GetSectionsResponse struct {
+	Module   string `json:"module"`
+	Endpoint string `json:"endpoint"`
+}
+
+type GetDelSectionRequest struct {
+	ID uint `json:"id" binding:"required,min=1"`
+}
+
+type CreateSectionRequest struct {
+	Module   string `json:"module" binding:"required"`
+	Endpoint string `json:"endpoint"`
+}
+
+type UpdateSectionRequest struct {
+	ID       uint   `json:"id" binding:"required,min=1"`
+	Module   string `json:"module"`
+	Endpoint string `json:"endpoint"`
 }
