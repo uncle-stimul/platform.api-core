@@ -7,8 +7,8 @@ import (
 	"platform.api-core/pkg/api/handlers"
 	"platform.api-core/pkg/api/middleware"
 	"platform.api-core/pkg/configs"
-	"platform.api-core/pkg/db"
 	"platform.api-core/pkg/logger"
+	"platform.api-core/pkg/repository"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +20,7 @@ func Run() {
 	srvCfg := configs.NewServerConfig()
 	log.Debug("Инициализация конфигурации компонента [api-core] успешно завершина")
 
-	pgdb := db.Run()
+	pgdb := repository.Run()
 	if pgdb == nil {
 		log.Info("Не предвиденная ошибка при подключении к БД")
 	}
@@ -38,7 +38,7 @@ func Run() {
 		log.WithError(err).Fatal("Не удалось запустить API-сервер: ")
 	}
 
-	err = db.Stop(pgdb)
+	err = repository.Stop(pgdb)
 	if err != nil {
 		log.WithError(err).Error("При отключении от БД возникла ошибка:")
 	}
