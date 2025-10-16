@@ -12,27 +12,51 @@ import (
 )
 
 func ExecuteSelectAll[D any](c *gin.Context, log *logrus.Logger, pgdb *gorm.DB, data *D, preload string, table string) bool {
-	if err := pgdb.Preload(preload).Find(&data).Error; err != nil {
-		msg := fmt.Sprintf("При получении выборки объектов из таблицы \"%s\" возникла ошибка", table)
-		log.WithError(err).Error(msg)
-		c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
-		return true
+	if preload != "" {
+		if err := pgdb.Preload(preload).Find(&data).Error; err != nil {
+			msg := fmt.Sprintf("При получении выборки объектов из таблицы \"%s\" возникла ошибка", table)
+			log.WithError(err).Error(msg)
+			c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
+			return true
+		}
+	} else {
+		if err := pgdb.Find(&data).Error; err != nil {
+			msg := fmt.Sprintf("При получении выборки объектов из таблицы \"%s\" возникла ошибка", table)
+			log.WithError(err).Error(msg)
+			c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
+			return true
+		}
 	}
 	return false
 }
 
 func ExecuteSelectByID[D any](c *gin.Context, log *logrus.Logger, pgdb *gorm.DB, data *D, preload string, id uint, table string) bool {
-	if err := pgdb.Preload(preload).First(&data, id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			msg := fmt.Sprintf("Объект с \"id:%d\" отсутствует в таблице \"%s\"", id, table)
-			log.Error(msg)
-			c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
-		} else {
-			msg := fmt.Sprintf("При поиске объекта с \"id:%d\" в таблице \"%s\" возникла ошибка", id, table)
-			log.WithError(err).Error(msg)
-			c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
+	if preload != "" {
+		if err := pgdb.Preload(preload).First(&data, id).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				msg := fmt.Sprintf("Объект с \"id:%d\" отсутствует в таблице \"%s\"", id, table)
+				log.Error(msg)
+				c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
+			} else {
+				msg := fmt.Sprintf("При поиске объекта с \"id:%d\" в таблице \"%s\" возникла ошибка", id, table)
+				log.WithError(err).Error(msg)
+				c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
+			}
+			return true
 		}
-		return true
+	} else {
+		if err := pgdb.First(&data, id).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				msg := fmt.Sprintf("Объект с \"id:%d\" отсутствует в таблице \"%s\"", id, table)
+				log.Error(msg)
+				c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
+			} else {
+				msg := fmt.Sprintf("При поиске объекта с \"id:%d\" в таблице \"%s\" возникла ошибка", id, table)
+				log.WithError(err).Error(msg)
+				c.JSON(http.StatusInternalServerError, models.DefaultResponse{Status: "error", Msg: msg})
+			}
+			return true
+		}
 	}
 	return false
 }

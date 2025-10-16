@@ -49,7 +49,7 @@ type DeleteUserRequest struct {
 }
 
 type GetRolesResponse struct {
-	Name        string   `json:"role"`
+	Name        string   `json:"name"`
 	Description string   `json:"descriptions"`
 	Permissions []string `json:"permissions"`
 }
