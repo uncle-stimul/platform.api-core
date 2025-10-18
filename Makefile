@@ -11,4 +11,4 @@ build:
 
 cleanup:
 	@echo "Очистка сборочных данных platform.api-core"
-	dokcer system prune --force
+	docker system prune --force
