@@ -25,9 +25,9 @@ func New(level string, format string) *logrus.Logger {
 	}
 
 	if format == "json" {
-		logger.SetFormatter(&CustomJSONFormat{})
+		logger.SetFormatter(&customJSONFormat{})
 	} else {
-		logger.SetFormatter(&CustomStringFormat{})
+		logger.SetFormatter(&customStringFormat{})
 	}
 
 	return logger
