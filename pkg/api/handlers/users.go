@@ -127,7 +127,7 @@ func UpdateUser(c *gin.Context) {
 			Status:   req.Status,
 		}
 
-		if errMsg := utils.CheckExistedObj(tx, log, &user, req.ID, "users"); errMsg != "" {
+		if errMsg := utils.ExecuteSave(tx, log, &user, req.ID, "users"); errMsg != "" {
 			return fmt.Errorf("%s", errMsg)
 		}
 

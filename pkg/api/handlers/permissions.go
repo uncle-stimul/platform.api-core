@@ -122,7 +122,7 @@ func UpdatePermission(c *gin.Context) {
 			Description: req.Description,
 		}
 
-		if errMsg := utils.CheckExistedObj(tx, log, &permission, req.ID, "permissions"); errMsg != "" {
+		if errMsg := utils.ExecuteSave(tx, log, &permission, req.ID, "permissions"); errMsg != "" {
 			return fmt.Errorf("%s", errMsg)
 		}
 

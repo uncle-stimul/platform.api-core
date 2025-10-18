@@ -125,7 +125,7 @@ func UpdateRole(c *gin.Context) {
 			Description: req.Description,
 		}
 
-		if errMsg := utils.CheckExistedObj(tx, log, &role, req.ID, "roles"); errMsg != "" {
+		if errMsg := utils.ExecuteSave(tx, log, &role, req.ID, "roles"); errMsg != "" {
 			return fmt.Errorf("%s", errMsg)
 		}
 
