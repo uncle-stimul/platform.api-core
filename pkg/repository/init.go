@@ -64,7 +64,7 @@ func initTablesEntities(pgdb *gorm.DB, log *logrus.Logger) {
 
 func initTablesLinks(pgdb *gorm.DB, log *logrus.Logger) {
 	for _, link := range models.SchemaLinks {
-		log.Debugf("Инициализация заполнения связей между таблица \"%s\" и \"%s\" для модуля api-core", link.ParentTable, link.ChildrenTable)
+		log.Debugf("Инициализация заполнения связей между таблицами \"%s\" и \"%s\" для модуля api-core", link.ParentTable, link.ChildrenTable)
 		var parentID uint
 		queryParent := fmt.Sprintf("SELECT id FROM %s WHERE %s = ? LIMIT 1", link.ParentTable, link.ParentField)
 		if err := pgdb.Raw(queryParent, link.ParentEntity).Scan(&parentID).Error; err != nil || parentID == 0 {
