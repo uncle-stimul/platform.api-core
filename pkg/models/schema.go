@@ -47,6 +47,19 @@ var SchemaLinks = []LinkDefinition{
 		},
 	},
 	{
+		ParentTable: "permissions", ParentField: "Name", ParentEntity: "settings-monitoring-access",
+		ChildrenTable: "sections", ChildrenField: "Endpoint", ChildrenEntities: []string{
+			"/settings/m/modules", "/settings/m/plugins",
+		},
+	},
+	{
+		ParentTable: "permissions", ParentField: "Name", ParentEntity: "settings-authentication-access",
+		ChildrenTable: "sections", ChildrenField: "Endpoint", ChildrenEntities: []string{
+			"/settings/a/users", "/settings/a/roles",
+			"/settings/a/sections", "/settings/a/permissions",
+		},
+	},
+	{
 		ParentTable: "roles", ParentField: "Name", ParentEntity: "platform-admin",
 		ChildrenTable: "permissions", ChildrenField: "Name", ChildrenEntities: []string{
 			"mainpage-access", "settings-access",
